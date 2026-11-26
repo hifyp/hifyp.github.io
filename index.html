@@ -47,7 +47,6 @@
             line-height: 1.6;
         }
 
-        /* Header Ringkas & Diam (Sticky) saat Scroll */
         header {
             background-color: var(--bg-header);
             color: var(--text-header);
@@ -96,7 +95,6 @@
             text-align: center;
         }
 
-        /* Responsif HP & Tablet: Judul + Slogan tetap tengah, tombol tema jadi ikon saja di pojok kanan atas */
         @media (max-width: 768px) {
             header {
                 padding: 18px 48px 16px;
@@ -160,8 +158,8 @@
 
         .about-photo-box {
             flex-shrink: 0;
-            width: 150px;
-            height: 150px;
+            width: 155px;
+            height: 155px;
             border-radius: 14px;
             border: 2px solid var(--border-color);
             background-color: var(--bg-body);
@@ -169,6 +167,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .about-photo-box.ratio-3-4 {
+            width: 155px;
+            height: 206px;
         }
 
         .about-photo-box img {
@@ -181,7 +184,25 @@
             flex: 1;
         }
 
-        .about-content p:last-child {
+        .about-rich-text {
+            color: var(--text-muted);
+            text-align: justify;
+            line-height: 1.75;
+        }
+
+        .about-rich-text b,
+        .about-rich-text strong {
+            color: var(--text-main);
+        }
+
+        .about-rich-text div,
+        .about-rich-text p {
+            margin: 0 0 10px 0;
+            text-align: justify;
+        }
+
+        .about-rich-text div:last-child,
+        .about-rich-text p:last-child {
             margin-bottom: 0;
         }
 
@@ -300,7 +321,7 @@
                 </div>
                 <div class="about-content">
                     <h2>Tentang Saya</h2>
-                    <p id="aboutText">Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.</p>
+                    <div id="aboutText" class="about-rich-text">Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.</div>
                 </div>
             </div>
         </div>
@@ -408,7 +429,13 @@
             .then(data => {
                 if (data.profil) {
                     if (data.profil.tentang) {
-                        document.getElementById('aboutText').textContent = data.profil.tentang;
+                        const formatted = data.profil.tentang.includes('<')
+                            ? data.profil.tentang
+                            : data.profil.tentang.replace(/\n/g, '<br>');
+                        document.getElementById('aboutText').innerHTML = formatted;
+                    }
+                    if (data.profil.fotoRatio === '3:4') {
+                        document.getElementById('photoBox').classList.add('ratio-3-4');
                     }
                     if (data.profil.fotoVersion) {
                         const img = document.getElementById('profileImg');
