@@ -53,7 +53,7 @@
         <p style="text-align:center;">Memuat daftar unduhan...</p>
     </div>
 
-    <footer>&copy; 2026. hifyp by GitHub.</footer>
+    <footer id="footerText">&copy; 2026. hifyp by GitHub.</footer>
 
     <script>
         const htmlEl = document.documentElement;
@@ -69,6 +69,9 @@
         fetch('data.json?t=' + Date.now())
             .then(res => res.json())
             .then(data => {
+                if (data.profil && data.profil.footer) {
+                    document.getElementById('footerText').textContent = data.profil.footer;
+                }
                 const items = data.pojokUnduh || [];
                 const container = document.getElementById('downloadList');
                 if (items.length === 0) {
