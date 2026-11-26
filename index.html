@@ -47,26 +47,31 @@
             line-height: 1.6;
         }
 
+        /* Header Ringkas & Diam (Sticky) saat Scroll */
         header {
             background-color: var(--bg-header);
             color: var(--text-header);
-            padding: 70px 20px 60px;
+            padding: 22px 20px;
             text-align: center;
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .theme-toggle {
             position: absolute;
-            top: 20px;
+            top: 50%;
             right: 20px;
+            transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 14px;
+            padding: 7px 13px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -78,19 +83,41 @@
 
         header h1 {
             margin: 0;
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             letter-spacing: -0.5px;
         }
 
-        header p {
+        header p.tagline {
             color: var(--text-header-sub);
-            font-size: 1.15rem;
-            margin-top: 10px;
+            font-size: 0.98rem;
+            margin: 4px 0 0 0;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 16px 14px;
+            }
+            header h1 {
+                font-size: 1.35rem;
+                padding-right: 95px;
+                text-align: left;
+            }
+            header p.tagline {
+                font-size: 0.85rem;
+                padding-right: 95px;
+                text-align: left;
+            }
+            .theme-toggle {
+                right: 14px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
         }
 
         .container {
             max-width: 900px;
-            margin: 40px auto;
+            margin: 36px auto;
             padding: 0 20px;
         }
 
@@ -110,10 +137,10 @@
             font-size: 1.4rem;
         }
 
-        p {
+        .section p {
             color: var(--text-muted);
             text-align: justify;
-           }
+        }
 
         /* Tata Letak Foto & Teks Tentang Saya */
         .about-wrapper {
@@ -252,7 +279,7 @@
             <span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span>
         </button>
         <h1>Hi FYP 👋 Iya begitu saja.</h1>
-        <p><i>Berkembang dengan Ilmu, Berdampak melalui Karya.</i></p>
+        <p class="tagline"><i>bergerak dalam senyap, berdampak dalam nyata.</i></p>
     </header>
 
     <div class="container">
@@ -333,7 +360,7 @@
         </div>
     </div>
 
-    <footer>
+    <footer id="footerText">
         &copy; 2026. hifyp by GitHub.
     </footer>
 
@@ -377,6 +404,9 @@
                     if (data.profil.fotoVersion) {
                         const img = document.getElementById('profileImg');
                         img.src = 'profil.png?v=' + data.profil.fotoVersion;
+                    }
+                    if (data.profil.footer) {
+                        document.getElementById('footerText').textContent = data.profil.footer;
                     }
                 }
                 if (data.kontak && data.kontak.length > 0) {
