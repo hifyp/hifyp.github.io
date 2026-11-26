@@ -1,69 +1,560 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Hifyp</title>
+    <title>Admin Dashboard - Hifyp</title>
     <style>
         :root {
-            --bg-body: #f8fafc; --bg-card: #ffffff; --bg-header: #0f172a;
-            --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0;
-            --accent: #3b82f6; --accent-hover: #2563eb; --danger: #ef4444; --warning: #f59e0b;
+            --bg-body: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --bg-topbar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --bg-hover: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-soft: rgba(59, 130, 246, 0.12);
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
         }
+
         [data-theme="dark"] {
-            --bg-body: #090d16; --bg-card: #131b2e; --bg-header: #060910;
-            --text-main: #f1f5f9; --text-muted: #94a3b8; --border-color: #1e293b;
-            --accent: #60a5fa; --accent-hover: #3b82f6; --danger: #f87171; --warning: #fbbf24;
+            --bg-body: #090d16;
+            --bg-sidebar: #0d1322;
+            --bg-topbar: #0d1322;
+            --bg-card: #131b2e;
+            --bg-input: #0a0f1c;
+            --bg-hover: #19243d;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --accent: #60a5fa;
+            --accent-soft: rgba(96, 165, 250, 0.14);
+            --accent-hover: #3b82f6;
+            --danger: #f87171;
+            --warning: #fbbf24;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); line-height: 1.6; }
-        header { background: var(--bg-header); color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        header h1 { margin: 0; font-size: 1.3rem; }
-        .container { max-width: 850px; margin: 30px auto; padding: 0 20px; }
-        .card { background: var(--bg-card); padding: 28px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 24px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
-        input[type="text"], input[type="password"], input[type="date"], input[type="url"], input[type="file"], select, textarea { width: 100%; padding: 10px 12px; margin-bottom: 16px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); font-family: inherit; }
-        textarea { min-height: 120px; resize: vertical; }
-        .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 0.9rem; color: var(--text-muted); }
-        .checkbox-row input { width: auto; margin: 0; }
-        .btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-        .btn:hover { background: var(--accent-hover); }
-        .btn-edit { background: var(--warning); color: #0f172a; padding: 6px 12px; font-size: 0.8rem; }
-        .btn-danger { background: var(--danger); padding: 6px 12px; font-size: 0.8rem; }
-        .btn-cancel { background: #64748b; margin-left: 8px; }
-        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; }
-        .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .tab-btn { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; font-weight: 500; }
-        .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); gap: 12px; }
-        .item-row:last-child { border-bottom: none; }
-        .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-        .status-msg { padding: 12px; border-radius: 6px; margin-bottom: 16px; display: none; font-weight: 500; }
-        .status-ok { background: #dcfce7; color: #166534; display: block; }
-        .status-err { background: #fee2e2; color: #991b1b; display: block; }
-        .preview-box { width: 130px; height: 130px; border-radius: 12px; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 16px; background: var(--bg-body); }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
-        .hint-text { display: block; font-size: 0.82rem; color: var(--accent); margin-top: -12px; margin-bottom: 16px; }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            background: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* ==================== LOGIN VIEW ==================== */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-card);
+            padding: 34px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .login-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .brand-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ==================== DASHBOARD SHELL ==================== */
+        .app-shell {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 265px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 150;
+            padding: 22px 14px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 18px;
+        }
+
+        .sidebar-title h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            letter-spacing: -0.2px;
+        }
+
+        .sidebar-title span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .nav-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-item-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .nav-icon {
+            font-size: 1.05rem;
+            width: 22px;
+            text-align: center;
+        }
+
+        .nav-count {
+            font-size: 0.74rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--bg-hover);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-item.active .nav-count {
+            background: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .sidebar-footer {
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .repo-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .dot-live {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            flex-shrink: 0;
+        }
+
+        /* ==================== MAIN CONTENT AREA ==================== */
+        .main-wrapper {
+            margin-left: 265px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 68px;
+            background: var(--bg-topbar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 7px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .topbar-title {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-area {
+            padding: 28px;
+            max-width: 960px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 26px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.12rem;
+        }
+
+        /* ==================== FORM & BUTTONS ==================== */
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="date"],
+        input[type="url"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 13px;
+            margin-bottom: 16px;
+            border-radius: 9px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.93rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea {
+            min-height: 125px;
+            resize: vertical;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .checkbox-row input {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-ghost {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-danger-ghost {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: var(--danger);
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger-ghost:hover {
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .btn-edit {
+            background: var(--warning);
+            color: #0f172a;
+            padding: 6px 12px;
+            font-size: 0.82rem;
+            border-radius: 7px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 0.82rem;
+            border-radius: 7px;
+        }
+
+        .btn-cancel {
+            background: #64748b;
+            margin-left: 8px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 14px;
+            border-radius: 8px;
+        }
+
+        .item-row:hover {
+            background: var(--bg-hover);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .status-msg {
+            padding: 13px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 500;
+            font-size: 0.92rem;
+        }
+
+        .status-ok {
+            background: rgba(34, 197, 94, 0.16);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            display: block;
+        }
+
+        .status-err {
+            background: rgba(239, 68, 68, 0.16);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: block;
+        }
+
+        .preview-box {
+            width: 128px;
+            height: 128px;
+            border-radius: 14px;
+            border: 2px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 16px;
+            background: var(--bg-input);
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hint-text {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--accent);
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 140;
+        }
+
+        @media (max-width: 820px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.25s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-backdrop.show {
+                display: block;
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .mobile-menu-btn {
+                display: inline-flex;
+            }
+            .topbar {
+                padding: 0 16px;
+            }
+            .content-area {
+                padding: 18px 16px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🔐 Admin Panel - Hifyp</h1>
-        <div>
-            <a href="index.html" class="btn btn-outline" style="text-decoration:none; margin-right:8px;">Lihat Web</a>
-            <button id="logoutBtn" class="btn btn-outline" style="display:none;" onclick="logout()">Keluar</button>
-        </div>
-    </header>
+    <!-- FORM LOGIN -->
+    <div id="loginSection" class="login-wrapper">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-badge">H</div>
+                <div>
+                    <h2 style="margin:0; font-size:1.25rem;">Admin Panel Hifyp</h2>
+                    <span style="font-size:0.84rem; color:var(--text-muted);">Masuk dengan GitHub Personal Access Token</span>
+                </div>
+            </div>
 
-    <div class="container">
-        <div id="statusBox" class="status-msg"></div>
+            <div id="loginStatusBox" class="status-msg"></div>
 
-        <!-- FORM LOGIN -->
-        <div id="loginSection" class="card">
-            <h2 style="margin-top:0;">Masuk Pengelola Konten</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem;">Gunakan GitHub Personal Access Token (PAT) dengan izin <b>Contents: Read and write</b>.</p>
-            
             <label>Username GitHub</label>
             <input type="text" id="ghOwner" value="hifyp">
 
@@ -71,53 +562,121 @@
             <input type="text" id="ghRepo" value="hifyp.github.io">
 
             <label>GitHub Personal Access Token (PAT)</label>
-            <input type="password" id="ghToken" placeholder="github_pat_xxxx atau ghp_xxxx">
+            <input type="password" id="ghToken" placeholder="ghp_xxxx atau github_pat_xxxx">
 
             <div class="checkbox-row">
                 <input type="checkbox" id="rememberToken" checked>
-                <label for="rememberToken" style="margin:0; font-weight:400; cursor:pointer;">Ingat login di perangkat ini (tidak perlu input token lagi)</label>
+                <label for="rememberToken" style="margin:0; font-weight:400; cursor:pointer;">Ingat login di perangkat ini</label>
             </div>
 
-            <button class="btn" onclick="login()">Masuk Dashboard</button>
+            <button class="btn" style="width:100%; justify-content:center;" onclick="login()">Masuk Dashboard</button>
         </div>
+    </div>
 
-        <!-- DASHBOARD ADMIN -->
-        <div id="dashboardSection" style="display:none;">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('profil', this)">Profil, Foto & Footer</button>
-                <button class="tab-btn" onclick="switchTab('seduhRasa', this)">Seduh Rasa</button>
-                <button class="tab-btn" onclick="switchTab('sambungCerita', this)">Sambung Cerita</button>
-                <button class="tab-btn" onclick="switchTab('ukirKarya', this)">Ukir Karya</button>
-                <button class="tab-btn" onclick="switchTab('pojokUnduh', this)">Pojok Unduh</button>
-                <button class="tab-btn" onclick="switchTab('kontak', this)">Kontak & Medsos</button>
+    <!-- DASHBOARD DENGAN SIDEBAR KIRI -->
+    <div id="dashboardSection" class="app-shell">
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-badge">H</div>
+                <div class="sidebar-title">
+                    <h2>Hifyp Studio</h2>
+                    <span>Content Manager</span>
+                </div>
             </div>
 
-            <!-- Form Utama -->
-            <div class="card" id="formCard">
-                <h3 id="formTitle" style="margin-top:0;">Pengaturan Profil, Foto & Footer</h3>
-                <form id="contentForm" onsubmit="saveNewItem(event)">
-                    <div id="dynamicFields"></div>
-                    <button type="submit" class="btn" id="submitBtn">Simpan & Publikasikan ke GitHub</button>
-                    <button type="button" class="btn btn-cancel" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Batal Edit</button>
-                </form>
-            </div>
+            <div class="nav-label">Menu Pengelolaan</div>
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="switchTab('profil', this)">
+                    <span class="nav-item-left"><span class="nav-icon">👤</span> Profil, Foto & Footer</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('seduhRasa', this)">
+                    <span class="nav-item-left"><span class="nav-icon">☕</span> Seduh Rasa</span>
+                    <span class="nav-count" id="count-seduhRasa">0</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('sambungCerita', this)">
+                    <span class="nav-item-left"><span class="nav-icon">🤝</span> Sambung Cerita</span>
+                    <span class="nav-count" id="count-sambungCerita">0</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('ukirKarya', this)">
+                    <span class="nav-item-left"><span class="nav-icon">🛠️</span> Ukir Karya</span>
+                    <span class="nav-count" id="count-ukirKarya">0</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('pojokUnduh', this)">
+                    <span class="nav-item-left"><span class="nav-icon">📥</span> Pojok Unduh</span>
+                    <span class="nav-count" id="count-pojokUnduh">0</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('kontak', this)">
+                    <span class="nav-item-left"><span class="nav-icon">📱</span> Kontak & Medsos</span>
+                    <span class="nav-count" id="count-kontak">0</span>
+                </button>
+            </nav>
 
-            <!-- Daftar Konten Tersimpan -->
-            <div class="card" id="listCard" style="display:none;">
-                <h3 style="margin-top:0;">Daftar Konten Aktif</h3>
-                <div id="existingList">Memuat data...</div>
+            <div class="sidebar-footer">
+                <div class="repo-pill">
+                    <span class="dot-live"></span>
+                    <span id="repoIndicator" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">hifyp.github.io</span>
+                </div>
+                <button class="btn btn-danger-ghost" style="width:100%; justify-content:center;" onclick="logout()">🚪 Keluar Akun</button>
             </div>
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar(true)" aria-label="Buka Menu">☰</button>
+                    <h1 class="topbar-title" id="topbarPageTitle">Profil, Foto & Footer</h1>
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn btn-ghost" id="themeToggleBtn" onclick="toggleTheme()">☀️ Terang</button>
+                    <a href="index.html" target="_blank" class="btn btn-ghost">↗ Lihat Web</a>
+                </div>
+            </header>
+
+            <main class="content-area">
+                <div id="statusBox" class="status-msg"></div>
+
+                <!-- Card Form -->
+                <div class="card" id="formCard">
+                    <div class="card-header">
+                        <h3 id="formTitle">Pengaturan Foto Profil (.PNG), Tentang Saya & Footer</h3>
+                    </div>
+                    <form id="contentForm" onsubmit="saveNewItem(event)">
+                        <div id="dynamicFields"></div>
+                        <div style="margin-top: 6px;">
+                            <button type="submit" class="btn" id="submitBtn">Simpan & Publikasikan ke GitHub</button>
+                            <button type="button" class="btn btn-cancel" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Batal Edit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Card Daftar Konten -->
+                <div class="card" id="listCard" style="display:none;">
+                    <div class="card-header">
+                        <h3 id="listTitle">Daftar Konten Aktif</h3>
+                    </div>
+                    <div id="existingList">Memuat data...</div>
+                </div>
+            </main>
         </div>
     </div>
 
     <script>
-        if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-
         let currentTab = 'profil';
         let siteData = { profil: {}, seduhRasa: [], sambungCerita: [], ukirKarya: [], pojokUnduh: [], kontak: [] };
         let fileSha = '';
         let selectedPngBase64 = null;
         let editingIndex = null;
+
+        const TAB_TITLES = {
+            profil: 'Profil, Foto & Footer',
+            seduhRasa: 'Seduh Rasa',
+            sambungCerita: 'Sambung Cerita',
+            ukirKarya: 'Ukir Karya',
+            pojokUnduh: 'Pojok Unduh',
+            kontak: 'Kontak & Medsos'
+        };
 
         const CONTACT_PRESETS = {
             whatsapp: { ikon: '💬', nama: 'WhatsApp', label: 'Nomor WhatsApp', placeholder: 'Contoh: 08896565758 atau 628896565758' },
@@ -132,7 +691,31 @@
             custom:   { ikon: '🌐', nama: 'Website / Lainnya', label: 'Tautan URL Lengkap', placeholder: 'Contoh: https://...' }
         };
 
+        // Tema Gelap / Terang
+        function initTheme() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            applyTheme(saved);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) btn.textContent = theme === 'dark' ? '☀️ Terang' : '🌙 Gelap';
+        }
+
+        function toggleSidebar(open) {
+            document.getElementById('sidebar').classList.toggle('open', open);
+            document.getElementById('sidebarBackdrop').classList.toggle('show', open);
+        }
+
         window.onload = () => {
+            initTheme();
             const savedToken = localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token');
             if (savedToken) {
                 document.getElementById('ghOwner').value = localStorage.getItem('gh_owner') || sessionStorage.getItem('gh_owner') || 'hifyp';
@@ -143,11 +726,12 @@
         };
 
         function showStatus(msg, isError = false) {
-            const box = document.getElementById('statusBox');
+            const isLoggedIn = document.getElementById('dashboardSection').style.display === 'block';
+            const box = document.getElementById(isLoggedIn ? 'statusBox' : 'loginStatusBox');
             box.textContent = msg;
             box.className = 'status-msg ' + (isError ? 'status-err' : 'status-ok');
             if (!isError) {
-                setTimeout(() => { box.style.display = 'none'; }, 6000);
+                setTimeout(() => { box.style.display = 'none'; }, 5000);
             }
         }
 
@@ -157,6 +741,13 @@
                 'Accept': 'application/vnd.github+json',
                 'X-GitHub-Api-Version': '2022-11-28'
             };
+        }
+
+        function updateSidebarCounts() {
+            ['seduhRasa', 'sambungCerita', 'ukirKarya', 'pojokUnduh', 'kontak'].forEach(key => {
+                const el = document.getElementById('count-' + key);
+                if (el) el.textContent = (siteData[key] || []).length;
+            });
         }
 
         async function login(isAuto = false) {
@@ -191,13 +782,14 @@
                 storage.setItem('gh_repo', repo);
                 storage.setItem('gh_token', token);
 
+                document.getElementById('repoIndicator').textContent = repo;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('dashboardSection').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'inline-block';
-                if (!isAuto) showStatus('Berhasil terhubung ke repository GitHub!');
                 
+                updateSidebarCounts();
                 renderForm();
                 renderList();
+                if (!isAuto) showStatus('Berhasil terhubung ke repository GitHub!');
             } catch (err) {
                 if (isAuto) {
                     localStorage.removeItem('gh_token');
@@ -219,8 +811,10 @@
             currentTab = tabName;
             selectedPngBase64 = null;
             editingIndex = null;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             btnEl.classList.add('active');
+            document.getElementById('topbarPageTitle').textContent = TAB_TITLES[tabName] || 'Dashboard';
+            toggleSidebar(false);
             renderForm();
             renderList();
         }
@@ -396,7 +990,7 @@
             const isEditing = editingIndex !== null;
             formTitle.textContent = isEditing ? '✏️ Edit Konten' : 'Tambah Konten Baru';
             submitBtn.textContent = isEditing ? 'Simpan Perubahan ke GitHub' : 'Simpan & Publikasikan ke GitHub';
-            cancelBtn.style.display = isEditing ? 'inline-block' : 'none';
+            cancelBtn.style.display = isEditing ? 'inline-flex' : 'none';
             listCard.style.display = 'block';
 
             if (currentTab === 'seduhRasa' || currentTab === 'sambungCerita') {
@@ -470,7 +1064,7 @@
             const listEl = document.getElementById('existingList');
             const items = siteData[currentTab] || [];
             if (items.length === 0) {
-                listEl.innerHTML = '<p style="color:var(--text-muted);">Belum ada item di kategori ini.</p>';
+                listEl.innerHTML = '<p style="color:var(--text-muted); margin:0;">Belum ada item di kategori ini.</p>';
                 return;
             }
             listEl.innerHTML = items.map((item, index) => `
@@ -641,6 +1235,7 @@
 
             const result = await res.json();
             fileSha = result.content.sha;
+            updateSidebarCounts();
             renderList();
             showStatus('Berhasil disimpan! Perubahan akan tampil di web dalam ±1 menit.');
         }
