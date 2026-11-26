@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portofolio - Hifyp</title>
+    <title>Beranda - Hifyp</title>
     <style>
-        /* Variabel Warna Tema Terang (Default) */
         :root {
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
@@ -20,7 +19,6 @@
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        /* Variabel Warna Tema Gelap */
         [data-theme="dark"] {
             --bg-body: #090d16;
             --bg-card: #131b2e;
@@ -49,27 +47,51 @@
             line-height: 1.6;
         }
 
-        /* Header & Tombol Tema */
-        header {
+        /* Navigasi */
+        nav {
             background-color: var(--bg-header);
-            color: var(--text-header);
-            padding: 70px 20px 60px;
-            text-align: center;
-            position: relative;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .nav-links a {
+            color: var(--text-header-sub);
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
         }
 
         .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -77,6 +99,15 @@
 
         .theme-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-header);
+            color: var(--text-header);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
         }
 
         header h1 {
@@ -118,7 +149,6 @@
             color: var(--text-muted);
         }
 
-        /* Grid Portofolio */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -178,7 +208,6 @@
             background-color: var(--accent-hover);
         }
 
-        /* Kontak */
         .contact-links {
             display: flex;
             flex-wrap: wrap;
@@ -207,16 +236,33 @@
             color: var(--text-muted);
             font-size: 0.9rem;
         }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 
+    <nav>
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="index.html" class="active">Beranda</a>
+                <a href="seduh-rasa.html">Seduh Rasa</a>
+                <a href="sambung-cerita.html">Sambung Cerita</a>
+                <a href="ukir-karya.html">Ukir Karya</a>
+                <a href="pojok-unduh.html">Pojok Unduh</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Ganti Tema">
+                <span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span>
+            </button>
+        </div>
+    </nav>
+
     <header>
-        <button class="theme-toggle" id="themeToggle" aria-label="Ganti Tema">
-            <span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span>
-        </button>
         <h1>Hi FYP 👋 Iya begitu saja.</h1>
-        <p><i></i>Berkembang dengan Ilmu, Berdampak melalui Karya.</i></p>
+        <p><i>Berkembang dengan Ilmu, Berdampak melalui Karya.</i></p>
     </header>
 
     <div class="container">
@@ -226,7 +272,7 @@
         </div>
 
         <div class="section">
-            <h2>Portofolio</h2>
+            <h2>Ruang Eksplorasi</h2>
             <div class="grid">
                 <div class="card">
                     <div>
@@ -237,7 +283,7 @@
                             <span class="tag">Humanis</span>
                         </div>
                     </div>
-                    <a href="#" class="btn">Aduk dulu</a>
+                    <a href="seduh-rasa.html" class="btn">Aduk dulu</a>
                 </div>
 
                 <div class="card">
@@ -249,19 +295,31 @@
                             <span class="tag">Harmonis</span>
                         </div>
                     </div>
-                    <a href="#" class="btn">Coba Dengerin</a>
+                    <a href="sambung-cerita.html" class="btn">Coba Dengerin</a>
                 </div>
 
                 <div class="card">
                     <div>
-                        <h3>FYP Project</h3>
+                        <h3>Ukir Karya</h3>
                         <p>Eksplorasi teknis dan karya digital praktis yang dirancang untuk menyederhanakan alur kerja serta menghadirkan solusi nyata.</p>
                         <div class="tags">
-                            <span class="tag">UI/UX</span>
-                            <span class="tag">HTML</span>
+                            <span class="tag">Sistem Informasi</span>
+                            <span class="tag">Web App</span>
                         </div>
                     </div>
-                    <a href="#" class="btn">Mari Bergerak</a>
+                    <a href="ukir-karya.html" class="btn">Mari Bergerak</a>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <h3>Pojok Unduh</h3>
+                        <p>Kumpulan dokumen referensi, template tata kelola, serta perangkat bantu kerja yang bebas diunduh dan dimanfaatkan.</p>
+                        <div class="tags">
+                            <span class="tag">Template</span>
+                            <span class="tag">Sumber Daya</span>
+                        </div>
+                    </div>
+                    <a href="pojok-unduh.html" class="btn">Ambil Berkas</a>
                 </div>
             </div>
         </div>
@@ -278,7 +336,7 @@
     </div>
 
     <footer>
-        &copy; 2026. hifyp by GitHub.
+        &copy; 2026. hifyp by GitHub. &bull; <a href="admin.html">Kelola</a>
     </footer>
 
     <script>
@@ -287,7 +345,6 @@
         const themeText = document.getElementById('themeText');
         const htmlEl = document.documentElement;
 
-        // Cek tema tersimpan atau preferensi sistem perangkat
         const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
