@@ -54,7 +54,6 @@
             line-height: 1.6;
         }
 
-        /* ==================== LOGIN VIEW ==================== */
         .login-wrapper {
             min-height: 100vh;
             display: flex;
@@ -94,7 +93,6 @@
             flex-shrink: 0;
         }
 
-        /* ==================== DASHBOARD SHELL ==================== */
         .app-shell {
             display: none;
             min-height: 100vh;
@@ -236,7 +234,6 @@
             flex-shrink: 0;
         }
 
-        /* ==================== MAIN CONTENT AREA ==================== */
         .main-wrapper {
             margin-left: 265px;
             min-height: 100vh;
@@ -316,7 +313,6 @@
             font-size: 1.12rem;
         }
 
-        /* ==================== FORM & BUTTONS ==================== */
         label {
             display: block;
             font-weight: 600;
@@ -351,6 +347,54 @@
         textarea {
             min-height: 125px;
             resize: vertical;
+        }
+
+        /* Rich Text Editor untuk Tentang Saya */
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px 10px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 9px 9px 0 0;
+        }
+
+        .tool-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .rich-editor {
+            width: 100%;
+            min-height: 160px;
+            padding: 13px 14px;
+            margin-bottom: 16px;
+            border-radius: 0 0 9px 9px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.93rem;
+            line-height: 1.65;
+            outline: none;
+            overflow-y: auto;
+        }
+
+        .rich-editor:focus {
+            border-color: var(--accent);
         }
 
         .checkbox-row {
@@ -479,17 +523,30 @@
             display: block;
         }
 
+        .photo-settings-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
         .preview-box {
-            width: 128px;
-            height: 128px;
+            width: 135px;
+            height: 135px;
             border-radius: 14px;
             border: 2px dashed var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            margin-bottom: 16px;
             background: var(--bg-input);
+            flex-shrink: 0;
+        }
+
+        .preview-box.ratio-3-4 {
+            width: 135px;
+            height: 180px;
         }
 
         .preview-box img {
@@ -542,7 +599,6 @@
 </head>
 <body>
 
-    <!-- FORM LOGIN -->
     <div id="loginSection" class="login-wrapper">
         <div class="login-card">
             <div class="login-brand">
@@ -573,7 +629,6 @@
         </div>
     </div>
 
-    <!-- DASHBOARD DENGAN SIDEBAR KIRI -->
     <div id="dashboardSection" class="app-shell">
         <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
 
@@ -581,8 +636,8 @@
             <div class="sidebar-header">
                 <div class="brand-badge">H</div>
                 <div class="sidebar-title">
-                    <h2>Hi FYP! Studio</h2>
-                    <span>Yang Punya</span>
+                    <h2>Hifyp Studio</h2>
+                    <span>Content Manager</span>
                 </div>
             </div>
 
@@ -637,7 +692,6 @@
             <main class="content-area">
                 <div id="statusBox" class="status-msg"></div>
 
-                <!-- Card Form -->
                 <div class="card" id="formCard">
                     <div class="card-header">
                         <h3 id="formTitle">Pengaturan Foto Profil (.PNG), Tentang Saya & Footer</h3>
@@ -651,7 +705,6 @@
                     </form>
                 </div>
 
-                <!-- Card Daftar Konten -->
                 <div class="card" id="listCard" style="display:none;">
                     <div class="card-header">
                         <h3 id="listTitle">Daftar Konten Aktif</h3>
@@ -691,7 +744,6 @@
             custom:   { ikon: '🌐', nama: 'Website / Lainnya', label: 'Tautan URL Lengkap', placeholder: 'Contoh: https://...' }
         };
 
-        // Tema Gelap / Terang
         function initTheme() {
             const saved = localStorage.getItem('theme') || 'dark';
             applyTheme(saved);
@@ -817,6 +869,26 @@
             toggleSidebar(false);
             renderForm();
             renderList();
+        }
+
+        function formatDoc(cmd) {
+            const editor = document.getElementById('f_tentang_editor');
+            if (!editor) return;
+            editor.focus();
+            document.execCommand(cmd, false, null);
+        }
+
+        function insertLineBreak() {
+            const editor = document.getElementById('f_tentang_editor');
+            if (!editor) return;
+            editor.focus();
+            document.execCommand('insertHTML', false, '<br><br>');
+        }
+
+        function updateRatioPreview(ratioVal) {
+            const box = document.getElementById('previewBoxEl');
+            if (!box) return;
+            box.classList.toggle('ratio-3-4', ratioVal === '3:4');
         }
 
         function onPlatformChange(type, isEditingInit = false) {
@@ -969,18 +1041,40 @@
                 cancelBtn.style.display = 'none';
                 submitBtn.textContent = 'Simpan & Publikasikan ke GitHub';
                 const defaultAbout = siteData.profil.tentang || 'Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.';
+                const formattedInitial = defaultAbout.replace(/\n/g, '<br>');
                 const defaultFooter = siteData.profil.footer || '© 2026. hifyp by GitHub.';
+                const currentRatio = siteData.profil.fotoRatio || '1:1';
                 const v = siteData.profil.fotoVersion || Date.now();
 
                 container.innerHTML = `
-                    <label>Pratinjau Foto Saat Ini</label>
-                    <div class="preview-box">
-                        <img id="imgPreview" src="profil.png?v=${v}" onerror="this.style.display='none'" alt="Pratinjau">
+                    <div class="photo-settings-grid">
+                        <div>
+                            <label>Pratinjau Foto</label>
+                            <div class="preview-box ${currentRatio === '3:4' ? 'ratio-3-4' : ''}" id="previewBoxEl">
+                                <img id="imgPreview" src="profil.png?v=${v}" onerror="this.style.display='none'" alt="Pratinjau">
+                            </div>
+                        </div>
+                        <div style="flex:1; min-width:220px;">
+                            <label>Rasio Tampilan Foto Profil</label>
+                            <select id="f_ratio" onchange="updateRatioPreview(this.value)">
+                                <option value="1:1" ${currentRatio === '1:1' ? 'selected' : ''}>1 : 1 (Persegi)</option>
+                                <option value="3:4" ${currentRatio === '3:4' ? 'selected' : ''}>3 : 4 (Potret Tegak)</option>
+                            </select>
+
+                            <label>Unggah Foto Baru (Wajib Format .PNG)</label>
+                            <input type="file" id="f_foto" accept="image/png" onchange="handlePngSelect(this)">
+                        </div>
                     </div>
-                    <label>Unggah Foto Baru (Wajib Format .PNG)</label>
-                    <input type="file" id="f_foto" accept="image/png" onchange="handlePngSelect(this)">
-                    <label>Teks Bagian "Tentang Saya"</label>
-                    <textarea id="f_tentang" required>${defaultAbout}</textarea>
+
+                    <label>Teks Bagian "Tentang Saya" (Mendukung Enter, Tebal & Miring)</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="tool-btn" onclick="formatDoc('bold')"><b>B</b> Tebal</button>
+                        <button type="button" class="tool-btn" onclick="formatDoc('italic')"><i>I</i> Miring</button>
+                        <button type="button" class="tool-btn" onclick="insertLineBreak()">↵ Paragraf Baru</button>
+                        <button type="button" class="tool-btn" onclick="formatDoc('removeFormat')">🧹 Hapus Format</button>
+                    </div>
+                    <div id="f_tentang_editor" class="rich-editor" contenteditable="true">${formattedInitial}</div>
+
                     <label>Teks Footer (Bagian Paling Bawah Halaman)</label>
                     <input type="text" id="f_footer" required value="${defaultFooter}">
                 `;
@@ -1130,9 +1224,11 @@
                         await uploadPngFile();
                         siteData.profil.fotoVersion = Date.now();
                     }
-                    siteData.profil.tentang = document.getElementById('f_tentang').value;
+                    const editorEl = document.getElementById('f_tentang_editor');
+                    siteData.profil.tentang = editorEl ? editorEl.innerHTML.trim() : '';
+                    siteData.profil.fotoRatio = document.getElementById('f_ratio').value;
                     siteData.profil.footer = document.getElementById('f_footer').value;
-                    await pushToGitHub('Memperbarui foto, profil & footer');
+                    await pushToGitHub('Memperbarui foto, rasio, profil & footer');
                     renderForm();
                     return;
                 }
