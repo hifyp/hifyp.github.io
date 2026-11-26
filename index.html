@@ -114,6 +114,47 @@
             color: var(--text-muted);
         }
 
+        /* Tata Letak Foto & Teks Tentang Saya */
+        .about-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .about-photo-box {
+            flex-shrink: 0;
+            width: 150px;
+            height: 150px;
+            border-radius: 14px;
+            border: 2px solid var(--border-color);
+            background-color: var(--bg-body);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .about-photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-content {
+            flex: 1;
+        }
+
+        .about-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 640px) {
+            .about-wrapper {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -215,8 +256,16 @@
 
     <div class="container">
         <div class="section">
-            <h2>Tentang Saya</h2>
-            <p>Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.</p>
+            <div class="about-wrapper">
+                <div class="about-photo-box" id="photoBox">
+                    <img id="profileImg" src="profil.png" alt="Foto Profil Hifyp" onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='block';">
+                    <span id="photoPlaceholder" style="display:none; font-size:2.5rem;">👤</span>
+                </div>
+                <div class="about-content">
+                    <h2>Tentang Saya</h2>
+                    <p id="aboutText">Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.</p>
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -317,10 +366,18 @@
             }
         }
 
-        // Memuat daftar Kontak & Medsos secara dinamis dari data.json
         fetch('data.json?t=' + Date.now())
             .then(res => res.json())
             .then(data => {
+                if (data.profil) {
+                    if (data.profil.tentang) {
+                        document.getElementById('aboutText').textContent = data.profil.tentang;
+                    }
+                    if (data.profil.fotoVersion) {
+                        const img = document.getElementById('profileImg');
+                        img.src = 'profil.png?v=' + data.profil.fotoVersion;
+                    }
+                }
                 if (data.kontak && data.kontak.length > 0) {
                     const container = document.getElementById('contactLinks');
                     container.innerHTML = data.kontak.map(item => {
