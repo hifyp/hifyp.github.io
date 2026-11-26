@@ -43,6 +43,7 @@
         .status-err { background: #fee2e2; color: #991b1b; display: block; }
         .preview-box { width: 130px; height: 130px; border-radius: 12px; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 16px; background: var(--bg-body); }
         .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .hint-text { display: block; font-size: 0.82rem; color: var(--accent); margin-top: -12px; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -117,6 +118,19 @@
         let fileSha = '';
         let selectedPngBase64 = null;
         let editingIndex = null;
+
+        const CONTACT_PRESETS = {
+            whatsapp: { ikon: '💬', nama: 'WhatsApp', label: 'Nomor WhatsApp', placeholder: 'Contoh: 08896565758 atau 628896565758' },
+            email:    { ikon: '✉️', nama: 'Email', label: 'Alamat Email', placeholder: 'Contoh: nama@gmail.com' },
+            instagram:{ ikon: '📸', nama: 'Instagram', label: 'Username atau Link Instagram', placeholder: 'Contoh: hifyp atau https://instagram.com/hifyp' },
+            github:   { ikon: '💻', nama: 'GitHub', label: 'Username atau Link GitHub', placeholder: 'Contoh: hifyp atau https://github.com/hifyp' },
+            linkedin: { ikon: '🔗', nama: 'LinkedIn', label: 'Username atau Link LinkedIn', placeholder: 'Contoh: hifyp atau https://linkedin.com/in/hifyp' },
+            tiktok:   { ikon: '🎵', nama: 'TikTok', label: 'Username atau Link TikTok', placeholder: 'Contoh: @hifyp atau https://tiktok.com/@hifyp' },
+            youtube:  { ikon: '▶️', nama: 'YouTube', label: 'Handle atau Link YouTube', placeholder: 'Contoh: @hifyp atau https://youtube.com/@hifyp' },
+            twitter:  { ikon: '🐦', nama: 'X / Twitter', label: 'Username atau Link X', placeholder: 'Contoh: hifyp atau https://x.com/hifyp' },
+            telegram: { ikon: '✈️', nama: 'Telegram', label: 'Username atau Link Telegram', placeholder: 'Contoh: hifyp atau https://t.me/hifyp' },
+            custom:   { ikon: '🌐', nama: 'Website / Lainnya', label: 'Tautan URL Lengkap', placeholder: 'Contoh: https://...' }
+        };
 
         window.onload = () => {
             const savedToken = localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token');
@@ -211,6 +225,74 @@
             renderList();
         }
 
+        function onPlatformChange(type, isEditingInit = false) {
+            const preset = CONTACT_PRESETS[type] || CONTACT_PRESETS.custom;
+            if (!isEditingInit) {
+                document.getElementById('f_ikon').value = preset.ikon;
+                document.getElementById('f_nama').value = preset.nama;
+            }
+            document.getElementById('f_link_label').textContent = preset.label;
+            document.getElementById('f_link').placeholder = preset.placeholder;
+            updateLinkPreview();
+        }
+
+        function buildFormattedContactLink(type, rawVal) {
+            const val = rawVal.trim();
+            if (!val) return '';
+
+            if (type === 'whatsapp') {
+                if (val.startsWith('http://') || val.startsWith('https://')) return val;
+                let digits = val.replace(/\D/g, '');
+                if (digits.startsWith('0')) digits = '62' + digits.slice(1);
+                return `https://wa.me/${digits}`;
+            }
+            if (type === 'email') {
+                if (val.startsWith('mailto:')) return val;
+                return `mailto:${val}`;
+            }
+            if (val.startsWith('http://') || val.startsWith('https://')) {
+                return val;
+            }
+            const cleanUser = val.replace(/^@/, '');
+            if (type === 'instagram') return `https://instagram.com/${cleanUser}`;
+            if (type === 'github') return `https://github.com/${cleanUser}`;
+            if (type === 'linkedin') return `https://linkedin.com/in/${cleanUser}`;
+            if (type === 'tiktok') return `https://tiktok.com/@${cleanUser}`;
+            if (type === 'youtube') return `https://youtube.com/@${cleanUser}`;
+            if (type === 'twitter') return `https://x.com/${cleanUser}`;
+            if (type === 'telegram') return `https://t.me/${cleanUser}`;
+            return `https://${val}`;
+        }
+
+        function updateLinkPreview() {
+            const typeEl = document.getElementById('f_platform');
+            const inputEl = document.getElementById('f_link');
+            const hintEl = document.getElementById('f_link_preview');
+            if (!typeEl || !inputEl || !hintEl) return;
+
+            const raw = inputEl.value.trim();
+            if (!raw) {
+                hintEl.textContent = 'Otomatis menambahkan format link (wa.me / mailto: / https://)';
+                return;
+            }
+            hintEl.textContent = 'Hasil tautan otomatis: ' + buildFormattedContactLink(typeEl.value, raw);
+        }
+
+        function detectPlatformFromLink(link, nama = '') {
+            const l = (link || '').toLowerCase();
+            const n = (nama || '').toLowerCase();
+            if (l.includes('wa.me') || l.includes('whatsapp') || n.includes('wa') || n.includes('whatsapp')) return 'whatsapp';
+            if (l.startsWith('mailto:') || n.includes('email') || n.includes('mail')) return 'email';
+            if (l.includes('instagram.com') || n.includes('instagram')) return 'instagram';
+            if (l.includes('github.com') || n.includes('github')) return 'github';
+            if (l.includes('linkedin.com') || n.includes('linkedin')) return 'linkedin';
+            if (l.includes('tiktok.com') || n.includes('tiktok')) return 'tiktok';
+            if (l.includes('youtube.com') || l.includes('youtu.be') || n.includes('youtube')) return 'youtube';
+            if (l.includes('twitter.com') || l.includes('x.com') || n.includes('twitter')) return 'twitter';
+            if (l.includes('t.me') || l.includes('telegram') || n.includes('telegram')) return 'telegram';
+            return 'custom';
+        }
+
         function editItem(index) {
             editingIndex = index;
             const item = siteData[currentTab][index];
@@ -234,9 +316,17 @@
                 document.getElementById('f_deskripsi').value = item.deskripsi || '';
                 document.getElementById('f_link').value = item.link || '';
             } else if (currentTab === 'kontak') {
+                const detected = detectPlatformFromLink(item.link, item.nama);
+                document.getElementById('f_platform').value = detected;
+                onPlatformChange(detected, true);
                 document.getElementById('f_ikon').value = item.ikon || '';
                 document.getElementById('f_nama').value = item.nama || '';
-                document.getElementById('f_link').value = item.link || '';
+
+                let displayVal = item.link || '';
+                if (detected === 'whatsapp') displayVal = displayVal.replace(/^https?:\/\/wa\.me\//i, '');
+                if (detected === 'email') displayVal = displayVal.replace(/^mailto:/i, '');
+                document.getElementById('f_link').value = displayVal;
+                updateLinkPreview();
             }
 
             document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
@@ -348,12 +438,29 @@
                 `;
             } else if (currentTab === 'kontak') {
                 container.innerHTML = `
-                    <label>Ikon Emoji</label>
-                    <input type="text" id="f_ikon" required placeholder="Contoh: ✉️, 💻, 🔗, 📱, 📸" value="🔗">
-                    <label>Nama Platform / Kontak</label>
-                    <input type="text" id="f_nama" required placeholder="Contoh: Instagram, WhatsApp, Email">
-                    <label>Tautan URL (Untuk email awali dengan mailto:)</label>
-                    <input type="text" id="f_link" required placeholder="Contoh: https://instagram.com/hifyp atau mailto:nama@email.com">
+                    <label>Pilih Jenis Kontak / Sosial Media</label>
+                    <select id="f_platform" onchange="onPlatformChange(this.value)">
+                        <option value="whatsapp">💬 WhatsApp (Otomatis wa.me)</option>
+                        <option value="email">✉️ Email (Otomatis mailto:)</option>
+                        <option value="instagram">📸 Instagram</option>
+                        <option value="github">💻 GitHub</option>
+                        <option value="linkedin">🔗 LinkedIn</option>
+                        <option value="tiktok">🎵 TikTok</option>
+                        <option value="youtube">▶️ YouTube</option>
+                        <option value="twitter">🐦 X / Twitter</option>
+                        <option value="telegram">✈️ Telegram</option>
+                        <option value="custom">🌐 Website / Tautan Lainnya</option>
+                    </select>
+
+                    <label id="f_link_label">Nomor WhatsApp</label>
+                    <input type="text" id="f_link" required placeholder="Contoh: 08896565758 atau 628896565758" oninput="updateLinkPreview()">
+                    <small class="hint-text" id="f_link_preview">Otomatis menambahkan format link (wa.me / mailto: / https://)</small>
+
+                    <label>Nama Tombol (Otomatis, bisa diubah)</label>
+                    <input type="text" id="f_nama" required value="WhatsApp">
+
+                    <label>Ikon Emoji (Otomatis, bisa diubah)</label>
+                    <input type="text" id="f_ikon" required value="💬">
                 `;
             }
         }
@@ -459,9 +566,11 @@
                     itemData.deskripsi = document.getElementById('f_deskripsi').value;
                     itemData.link = document.getElementById('f_link').value;
                 } else if (currentTab === 'kontak') {
+                    const platformType = document.getElementById('f_platform').value;
+                    const rawInput = document.getElementById('f_link').value;
                     itemData.ikon = document.getElementById('f_ikon').value.trim();
                     itemData.nama = document.getElementById('f_nama').value.trim();
-                    itemData.link = document.getElementById('f_link').value.trim();
+                    itemData.link = buildFormattedContactLink(platformType, rawInput);
                 }
 
                 if (isEditing) {
