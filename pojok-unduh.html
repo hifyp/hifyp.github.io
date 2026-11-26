@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pojok Unduh - Hifyp</title>
+    <style>
+        :root {
+            --bg-body: #f8fafc; --bg-card: #ffffff; --bg-header: #0f172a;
+            --text-main: #1e293b; --text-muted: #64748b; --text-header: #f8fafc;
+            --text-header-sub: #94a3b8; --border-color: #e2e8f0;
+            --accent: #3b82f6; --accent-hover: #2563eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        [data-theme="dark"] {
+            --bg-body: #090d16; --bg-card: #131b2e; --bg-header: #060910;
+            --text-main: #f1f5f9; --text-muted: #94a3b8; --text-header: #f8fafc;
+            --text-header-sub: #64748b; --border-color: #1e293b;
+            --accent: #60a5fa; --accent-hover: #3b82f6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        * { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        nav { background: var(--bg-header); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 16px; }
+        .nav-links a { color: var(--text-header-sub); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
+        .nav-links a:hover, .nav-links a.active { color: #ffffff; }
+        .theme-toggle { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
+        header { background: var(--bg-header); color: var(--text-header); padding: 50px 20px; text-align: center; }
+        header h1 { margin: 0; font-size: 2.2rem; }
+        header p { color: var(--text-header-sub); margin-top: 8px; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .download-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px 26px; margin-bottom: 18px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .download-info { flex: 1; min-width: 240px; }
+        .download-info h3 { margin: 0 0 6px 0; font-size: 1.15rem; }
+        .download-info p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+        .badge { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+        .btn { background: var(--accent); color: #fff; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 500; white-space: nowrap; }
+        .btn:hover { background: var(--accent-hover); }
+        footer { text-align: center; padding: 30px 20px; color: var(--text-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="index.html">Beranda</a>
+                <a href="seduh-rasa.html">Seduh Rasa</a>
+                <a href="sambung-cerita.html">Sambung Cerita</a>
+                <a href="ukir-karya.html">Ukir Karya</a>
+                <a href="pojok-unduh.html" class="active">Pojok Unduh</a>
+            </div>
+            <button class="theme-toggle" id="themeToggle"><span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span></button>
+        </div>
+    </nav>
+
+    <header>
+        <h1>📥 Pojok Unduh</h1>
+        <p>Kumpulan dokumen, template, dan perangkat bantu kerja siap pakai.</p>
+    </header>
+
+    <div class="container" id="downloadList">
+        <p style="text-align:center;">Memuat daftar unduhan...</p>
+    </div>
+
+    <footer>&copy; 2026. hifyp by GitHub.</footer>
+
+    <script>
+        const htmlEl = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+        document.getElementById('themeToggle').addEventListener('click', () => setTheme(htmlEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light'));
+        function setTheme(t) {
+            htmlEl.setAttribute('data-theme', t); localStorage.setItem('theme', t);
+            document.getElementById('themeIcon').textContent = t === 'dark' ? '☀️' : '🌙';
+            document.getElementById('themeText').textContent = t === 'dark' ? 'Mode Terang' : 'Mode Gelap';
+        }
+
+        fetch('data.json?t=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                const items = data.pojokUnduh || [];
+                const container = document.getElementById('downloadList');
+                if (items.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;">Belum ada berkas untuk diunduh.</p>';
+                    return;
+                }
+                container.innerHTML = items.map(item => `
+                    <div class="download-item">
+                        <div class="download-info">
+                            <span class="badge">${item.ukuran || 'Berkas'}</span>
+                            <h3>${item.judul}</h3>
+                            <p>${item.deskripsi}</p>
+                        </div>
+                        <a href="${item.link}" target="_blank" class="btn">Unduh Sekarang</a>
+                    </div>
+                `).join('');
+            });
+    </script>
+</body>
+</html>
