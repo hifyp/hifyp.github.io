@@ -58,7 +58,7 @@
         <!-- FORM LOGIN -->
         <div id="loginSection" class="card">
             <h2 style="margin-top:0;">Masuk Pengelola Konten</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem;">Gunakan GitHub Personal Access Token (PAT) Anda untuk mengelola isi weblog.</p>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Gunakan GitHub Personal Access Token (PAT) dengan izin <b>Contents: Read and write</b>.</p>
             
             <label>Username GitHub</label>
             <input type="text" id="ghOwner" value="hifyp">
@@ -88,7 +88,6 @@
                 <button class="tab-btn" onclick="switchTab('kontak', this)">Kontak & Medsos</button>
             </div>
 
-            <!-- Form Utama -->
             <div class="card">
                 <h3 id="formTitle" style="margin-top:0;">Pengaturan Profil, Foto & Footer</h3>
                 <form id="contentForm" onsubmit="saveNewItem(event)">
@@ -97,7 +96,6 @@
                 </form>
             </div>
 
-            <!-- Daftar Konten Tersimpan -->
             <div class="card" id="listCard" style="display:none;">
                 <h3 style="margin-top:0;">Daftar Konten Aktif</h3>
                 <div id="existingList">Memuat data...</div>
@@ -127,7 +125,17 @@
             const box = document.getElementById('statusBox');
             box.textContent = msg;
             box.className = 'status-msg ' + (isError ? 'status-err' : 'status-ok');
-            setTimeout(() => { box.style.display = 'none'; }, 6000);
+            if (!isError) {
+                setTimeout(() => { box.style.display = 'none'; }, 6000);
+            }
+        }
+
+        function getAuthHeaders(token) {
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            };
         }
 
         async function login(isAuto = false) {
@@ -139,15 +147,20 @@
             if (!owner || !repo || !token) return showStatus('Semua kolom wajib diisi!', true);
 
             try {
-                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`, {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json?ref=main&t=${Date.now()}`, {
+                    headers: getAuthHeaders(token),
+                    cache: 'no-store'
                 });
 
-                if (!res.ok) throw new Error('Token tidak valid atau file data.json belum ada di repository.');
+                if (!res.ok) {
+                    const errJson = await res.json().catch(() => ({}));
+                    throw new Error(`Gagal akses GitHub (${res.status}): ${errJson.message || 'Token tidak valid atau data.json belum ada.'}`);
+                }
 
                 const json = await res.json();
                 fileSha = json.sha;
-                const decoded = decodeURIComponent(escape(atob(json.content)));
+                const cleanBase64 = json.content.replace(/\n/g, '');
+                const decoded = decodeURIComponent(escape(atob(cleanBase64)));
                 siteData = JSON.parse(decoded);
                 if (!siteData.kontak) siteData.kontak = [];
                 if (!siteData.profil) siteData.profil = {};
@@ -198,11 +211,17 @@
                 input.value = '';
                 return;
             }
+            if (file.size > 2 * 1024 * 1024) {
+                showStatus('Ukuran foto maksimal 2 MB agar halaman cepat dimuat.', true);
+                input.value = '';
+                return;
+            }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const dataUrl = e.target.result;
-                document.getElementById('imgPreview').src = dataUrl;
-                document.getElementById('imgPreview').style.display = 'block';
+                const preview = document.getElementById('imgPreview');
+                preview.src = dataUrl;
+                preview.style.display = 'block';
                 selectedPngBase64 = dataUrl.split(',')[1];
             };
             reader.readAsDataURL(file);
@@ -313,8 +332,9 @@
             const token = localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token');
 
             let existingPhotoSha = null;
-            const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/profil.png`, {
-                headers: { 'Authorization': `token ${token}` }
+            const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/profil.png?t=${Date.now()}`, {
+                headers: getAuthHeaders(token),
+                cache: 'no-store'
             });
             if (checkRes.ok) {
                 const existing = await checkRes.json();
@@ -330,13 +350,16 @@
             const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/profil.png`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `token ${token}`,
+                    ...getAuthHeaders(token),
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(bodyPayload)
             });
 
-            if (!putRes.ok) throw new Error('Gagal mengunggah file profil.png ke GitHub.');
+            if (!putRes.ok) {
+                const errData = await putRes.json().catch(() => ({}));
+                throw new Error(`Gagal unggah profil.png (${putRes.status}): ${errData.message || 'Periksa izin Write pada Token GitHub Anda.'}`);
+            }
             selectedPngBase64 = null;
         }
 
@@ -409,13 +432,23 @@
             const repo = localStorage.getItem('gh_repo') || sessionStorage.getItem('gh_repo');
             const token = localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token');
 
+            // Ambil SHA terbaru sebelum menyimpan agar tidak pernah terjadi bentrok versi (409)
+            const latestRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json?t=${Date.now()}`, {
+                headers: getAuthHeaders(token),
+                cache: 'no-store'
+            });
+            if (latestRes.ok) {
+                const latestData = await latestRes.json();
+                fileSha = latestData.sha;
+            }
+
             const jsonString = JSON.stringify(siteData, null, 2);
             const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
 
             const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `token ${token}`,
+                    ...getAuthHeaders(token),
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -425,7 +458,10 @@
                 })
             });
 
-            if (!res.ok) throw new Error('Gagal menyimpan perubahan ke GitHub.');
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(`Gagal menyimpan data.json (${res.status}): ${errData.message || 'Periksa izin Write pada Token GitHub.'}`);
+            }
 
             const result = await res.json();
             fileSha = result.content.sha;
