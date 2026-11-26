@@ -74,6 +74,7 @@
             font-size: 0.85rem;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
         }
 
@@ -85,6 +86,7 @@
             margin: 0;
             font-size: 1.75rem;
             letter-spacing: -0.5px;
+            text-align: center;
         }
 
         header p.tagline {
@@ -94,24 +96,31 @@
             text-align: center;
         }
 
-        @media (max-width: 640px) {
+        /* Responsif HP & Tablet: Judul + Slogan tetap tengah, tombol tema jadi ikon saja di pojok kanan atas */
+        @media (max-width: 768px) {
             header {
-                padding: 16px 14px;
+                padding: 18px 48px 16px;
             }
             header h1 {
                 font-size: 1.35rem;
-                padding-right: 95px;
-                text-align: left;
+                text-align: center;
             }
             header p.tagline {
-                font-size: 0.85rem;
-                padding-right: 95px;
-                text-align: left;
+                font-size: 0.84rem;
+                text-align: center;
             }
             .theme-toggle {
-                right: 14px;
-                padding: 6px 10px;
-                font-size: 0.8rem;
+                top: 12px;
+                right: 12px;
+                transform: none;
+                width: 34px;
+                height: 34px;
+                padding: 0;
+                border-radius: 50%;
+                font-size: 1rem;
+            }
+            #themeText {
+                display: none;
             }
         }
 
