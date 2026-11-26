@@ -1,4 +1,7 @@
 {
+  "profil": {
+    "tentang": "Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat \"Berkembang dengan Ilmu, Berdampak melalui Karya\" serta \"Bergerak dalam senyap, berdampak dalam nyata\", saya membangun alur kerja digital yang ringan, efisien, dan berdampak."
+  },
   "seduhRasa": [
     {
       "id": 1732580001,
@@ -37,9 +40,8 @@
       "deskripsi": "Kerangka dasar penyusunan standar operasional prosedur untuk digitalisasi layanan administrasi.",
       "link": "#"
     }
-  ]
-}
-"kontak": [
+  ],
+  "kontak": [
     {
       "id": 1732580005,
       "ikon": "✉️",
