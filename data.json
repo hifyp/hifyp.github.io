@@ -53,6 +53,12 @@
       "ikon": "💬",
       "nama": "WhatsApp",
       "link": "https://wa.me/68896565758"
+    },
+    {
+      "id": 1795668324799,
+      "ikon": "✉️",
+      "nama": "Email",
+      "link": "mailto:halo@hifyp.com"
     }
   ]
 }
