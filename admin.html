@@ -80,7 +80,7 @@
         <!-- DASHBOARD ADMIN -->
         <div id="dashboardSection" style="display:none;">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('profil', this)">Foto & Profil</button>
+                <button class="tab-btn active" onclick="switchTab('profil', this)">Profil, Foto & Footer</button>
                 <button class="tab-btn" onclick="switchTab('seduhRasa', this)">Seduh Rasa</button>
                 <button class="tab-btn" onclick="switchTab('sambungCerita', this)">Sambung Cerita</button>
                 <button class="tab-btn" onclick="switchTab('ukirKarya', this)">Ukir Karya</button>
@@ -90,7 +90,7 @@
 
             <!-- Form Utama -->
             <div class="card">
-                <h3 id="formTitle" style="margin-top:0;">Pengaturan Foto & Tentang Saya</h3>
+                <h3 id="formTitle" style="margin-top:0;">Pengaturan Profil, Foto & Footer</h3>
                 <form id="contentForm" onsubmit="saveNewItem(event)">
                     <div id="dynamicFields"></div>
                     <button type="submit" class="btn" id="submitBtn">Simpan & Publikasikan ke GitHub</button>
@@ -215,9 +215,10 @@
             const today = new Date().toISOString().split('T')[0];
 
             if (currentTab === 'profil') {
-                formTitle.textContent = 'Pengaturan Foto Profil (.PNG) & Tentang Saya';
+                formTitle.textContent = 'Pengaturan Foto Profil (.PNG), Tentang Saya & Footer';
                 listCard.style.display = 'none';
                 const defaultAbout = siteData.profil.tentang || 'Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.';
+                const defaultFooter = siteData.profil.footer || '© 2026. hifyp by GitHub.';
                 const v = siteData.profil.fotoVersion || Date.now();
 
                 container.innerHTML = `
@@ -229,6 +230,8 @@
                     <input type="file" id="f_foto" accept="image/png" onchange="handlePngSelect(this)">
                     <label>Teks Bagian "Tentang Saya"</label>
                     <textarea id="f_tentang" required>${defaultAbout}</textarea>
+                    <label>Teks Footer (Bagian Paling Bawah Halaman)</label>
+                    <input type="text" id="f_footer" required value="${defaultFooter}">
                 `;
                 return;
             }
@@ -350,7 +353,8 @@
                         siteData.profil.fotoVersion = Date.now();
                     }
                     siteData.profil.tentang = document.getElementById('f_tentang').value;
-                    await pushToGitHub('Memperbarui foto & profil Tentang Saya');
+                    siteData.profil.footer = document.getElementById('f_footer').value;
+                    await pushToGitHub('Memperbarui foto, profil & footer');
                     renderForm();
                     return;
                 }
