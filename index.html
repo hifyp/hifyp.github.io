@@ -47,7 +47,7 @@
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
-            padding: 0 0 76px 0; /* Ruang aman agar konten terbawah tidak tertutup footer bar */
+            padding: 0 0 64px 0;
             background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.6;
@@ -279,7 +279,7 @@
             color: var(--accent);
         }
 
-        /* Footer Menu Bar Tetap di Bawah */
+        /* Footer Bar Tetap di Bawah (Pojok Kiri Bawah) */
         .footer-bar {
             position: fixed;
             bottom: 0;
@@ -291,39 +291,10 @@
             -webkit-backdrop-filter: blur(8px);
             border-top: 1px solid var(--border-color);
             color: var(--text-header-sub);
-            padding: 11px 24px;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .footer-inner {
-            max-width: 1160px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
+            padding: 12px 24px;
+            text-align: left;
             font-size: 0.85rem;
-        }
-
-        .footer-nav {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .footer-nav a {
-            color: var(--text-header-sub);
-            text-decoration: none;
-            font-weight: 500;
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-
-        .footer-nav a:hover,
-        .footer-nav a.active-link {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
         }
 
         /* Responsif Tablet (769px - 1024px) */
@@ -339,7 +310,7 @@
         /* Responsif HP & Tablet Kecil (<= 768px) */
         @media (max-width: 768px) {
             body {
-                padding-bottom: 92px;
+                padding-bottom: 58px;
             }
             header {
                 padding: 18px 48px 16px;
@@ -384,21 +355,8 @@
                 gap: 14px;
             }
             .footer-bar {
-                padding: 9px 14px;
-            }
-            .footer-inner {
-                flex-direction: column;
-                gap: 4px;
-                text-align: center;
-                font-size: 0.78rem;
-            }
-            .footer-nav {
-                justify-content: center;
-                gap: 6px;
-            }
-            .footer-nav a {
-                padding: 2px 6px;
-                font-size: 0.76rem;
+                padding: 11px 16px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -410,7 +368,7 @@
             <span id="themeIcon">🌙</span> <span id="themeText">Mode Gelap</span>
         </button>
         <h1>Hi FYP 👋 Iya begitu saja.</h1>
-        <p class="tagline"><i>bergerak dalam senyap, berdampak dengan nyata.</i></p>
+        <p class="tagline"><i>Berkembang dengan Ilmu, Berdampak melalui Karya.</i></p>
     </header>
 
     <div class="container">
@@ -492,17 +450,7 @@
     </div>
 
     <footer class="footer-bar">
-        <div class="footer-inner">
-            <div id="footerText">&copy; 2026. hifyp by GitHub.</div>
-            <nav class="footer-nav" aria-label="Navigasi Bawah">
-                <a href="#top" class="active-link">Beranda</a>
-                <a href="seduh-rasa.html">Seduh Rasa</a>
-                <a href="sambung-cerita.html">Sambung Cerita</a>
-                <a href="ukir-karya.html">Ukir Karya</a>
-                <a href="pojok-unduh.html">Pojok Unduh</a>
-                <a href="#kontak">Kontak</a>
-            </nav>
-        </div>
+        <div id="footerText">&copy; 2026. hifyp by GitHub.</div>
     </footer>
 
     <script>
