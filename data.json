@@ -39,3 +39,24 @@
     }
   ]
 }
+"kontak": [
+    {
+      "id": 1732580005,
+      "ikon": "✉️",
+      "nama": "Email",
+      "link": "mailto:emailkamu@contoh.com"
+    },
+    {
+      "id": 1732580006,
+      "ikon": "💻",
+      "nama": "GitHub",
+      "link": "https://github.com/hifyp"
+    },
+    {
+      "id": 1732580007,
+      "ikon": "🔗",
+      "nama": "LinkedIn",
+      "link": "https://linkedin.com"
+    }
+  ]
+}
