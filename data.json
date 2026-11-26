@@ -26,6 +26,17 @@
   ],
   "ukirKarya": [
     {
+      "id": 1795670108472,
+      "judul": "Portal Data Sekolah",
+      "tanggal": "2026-11-26",
+      "deskripsi": "Portal Data SDN Menteng Atas 11 adalah aplikasi web terintegrasi Google Apps Script dan Google Spreadsheet yang menyajikan analitik statistik sekolah, direktori PTK dan peserta didik, arsip Rapor Pendidikan, serta data sarana prasarana dan denah dalam antarmuka responsif. Dilengkapi filter tahun ajaran, verifikasi akses pegawai berbasis NRK/NIKI dengan penguncian otomatis, sensor data sensitif, serta panel admin terpusat, sistem ini membantu pengelolaan informasi sekolah berjalan cepat, tertib, dan aman",
+      "tags": [
+        "HTML",
+        "GAS"
+      ],
+      "link": "https://portaldata.sdnmentengatas11.sch.id"
+    },
+    {
       "id": 1732580003,
       "judul": "Weblog Pribadi & Mini CMS GitHub",
       "tanggal": "2026-11-26",
