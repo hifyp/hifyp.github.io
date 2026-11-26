@@ -8,12 +8,12 @@
         :root {
             --bg-body: #f8fafc; --bg-card: #ffffff; --bg-header: #0f172a;
             --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0;
-            --accent: #3b82f6; --accent-hover: #2563eb; --danger: #ef4444;
+            --accent: #3b82f6; --accent-hover: #2563eb; --danger: #ef4444; --warning: #f59e0b;
         }
         [data-theme="dark"] {
             --bg-body: #090d16; --bg-card: #131b2e; --bg-header: #060910;
             --text-main: #f1f5f9; --text-muted: #94a3b8; --border-color: #1e293b;
-            --accent: #60a5fa; --accent-hover: #3b82f6; --danger: #f87171;
+            --accent: #60a5fa; --accent-hover: #3b82f6; --danger: #f87171; --warning: #fbbf24;
         }
         * { box-sizing: border-box; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); line-height: 1.6; }
@@ -28,13 +28,16 @@
         .checkbox-row input { width: auto; margin: 0; }
         .btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
         .btn:hover { background: var(--accent-hover); }
+        .btn-edit { background: var(--warning); color: #0f172a; padding: 6px 12px; font-size: 0.8rem; }
         .btn-danger { background: var(--danger); padding: 6px 12px; font-size: 0.8rem; }
+        .btn-cancel { background: #64748b; margin-left: 8px; }
         .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; }
         .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .tab-btn { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; font-weight: 500; }
         .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
         .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); gap: 12px; }
         .item-row:last-child { border-bottom: none; }
+        .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
         .status-msg { padding: 12px; border-radius: 6px; margin-bottom: 16px; display: none; font-weight: 500; }
         .status-ok { background: #dcfce7; color: #166534; display: block; }
         .status-err { background: #fee2e2; color: #991b1b; display: block; }
@@ -88,14 +91,17 @@
                 <button class="tab-btn" onclick="switchTab('kontak', this)">Kontak & Medsos</button>
             </div>
 
-            <div class="card">
+            <!-- Form Utama -->
+            <div class="card" id="formCard">
                 <h3 id="formTitle" style="margin-top:0;">Pengaturan Profil, Foto & Footer</h3>
                 <form id="contentForm" onsubmit="saveNewItem(event)">
                     <div id="dynamicFields"></div>
                     <button type="submit" class="btn" id="submitBtn">Simpan & Publikasikan ke GitHub</button>
+                    <button type="button" class="btn btn-cancel" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Batal Edit</button>
                 </form>
             </div>
 
+            <!-- Daftar Konten Tersimpan -->
             <div class="card" id="listCard" style="display:none;">
                 <h3 style="margin-top:0;">Daftar Konten Aktif</h3>
                 <div id="existingList">Memuat data...</div>
@@ -110,6 +116,7 @@
         let siteData = { profil: {}, seduhRasa: [], sambungCerita: [], ukirKarya: [], pojokUnduh: [], kontak: [] };
         let fileSha = '';
         let selectedPngBase64 = null;
+        let editingIndex = null;
 
         window.onload = () => {
             const savedToken = localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token');
@@ -197,10 +204,47 @@
         function switchTab(tabName, btnEl) {
             currentTab = tabName;
             selectedPngBase64 = null;
+            editingIndex = null;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btnEl.classList.add('active');
             renderForm();
             renderList();
+        }
+
+        function editItem(index) {
+            editingIndex = index;
+            const item = siteData[currentTab][index];
+            renderForm();
+
+            if (currentTab === 'seduhRasa' || currentTab === 'sambungCerita') {
+                document.getElementById('f_judul').value = item.judul || '';
+                document.getElementById('f_tanggal').value = item.tanggal || '';
+                document.getElementById('f_kategori').value = item.kategori || '';
+                document.getElementById('f_ringkasan').value = item.ringkasan || '';
+                document.getElementById('f_isi').value = item.isi || '';
+            } else if (currentTab === 'ukirKarya') {
+                document.getElementById('f_judul').value = item.judul || '';
+                document.getElementById('f_tanggal').value = item.tanggal || '';
+                document.getElementById('f_deskripsi').value = item.deskripsi || '';
+                document.getElementById('f_tags').value = (item.tags || []).join(', ');
+                document.getElementById('f_link').value = item.link || '';
+            } else if (currentTab === 'pojokUnduh') {
+                document.getElementById('f_judul').value = item.judul || '';
+                document.getElementById('f_ukuran').value = item.ukuran || '';
+                document.getElementById('f_deskripsi').value = item.deskripsi || '';
+                document.getElementById('f_link').value = item.link || '';
+            } else if (currentTab === 'kontak') {
+                document.getElementById('f_ikon').value = item.ikon || '';
+                document.getElementById('f_nama').value = item.nama || '';
+                document.getElementById('f_link').value = item.link || '';
+            }
+
+            document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingIndex = null;
+            renderForm();
         }
 
         function handlePngSelect(input) {
@@ -231,11 +275,15 @@
             const container = document.getElementById('dynamicFields');
             const listCard = document.getElementById('listCard');
             const formTitle = document.getElementById('formTitle');
+            const submitBtn = document.getElementById('submitBtn');
+            const cancelBtn = document.getElementById('cancelEditBtn');
             const today = new Date().toISOString().split('T')[0];
 
             if (currentTab === 'profil') {
                 formTitle.textContent = 'Pengaturan Foto Profil (.PNG), Tentang Saya & Footer';
                 listCard.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                submitBtn.textContent = 'Simpan & Publikasikan ke GitHub';
                 const defaultAbout = siteData.profil.tentang || 'Sebagai Penata Kelola Sistem dan Teknologi Informasi lulusan S1 Sistem Informasi di Dinas Pendidikan Provinsi DKI Jakarta, saya menjembatani tata kelola organisasi dengan solusi teknologi praktis. Berlandaskan semangat "Berkembang dengan Ilmu, Berdampak melalui Karya" serta "Bergerak dalam senyap, berdampak dalam nyata", saya membangun alur kerja digital yang ringan, efisien, dan berdampak.';
                 const defaultFooter = siteData.profil.footer || '© 2026. hifyp by GitHub.';
                 const v = siteData.profil.fotoVersion || Date.now();
@@ -255,7 +303,10 @@
                 return;
             }
 
-            formTitle.textContent = 'Tambah Konten Baru';
+            const isEditing = editingIndex !== null;
+            formTitle.textContent = isEditing ? '✏️ Edit Konten' : 'Tambah Konten Baru';
+            submitBtn.textContent = isEditing ? 'Simpan Perubahan ke GitHub' : 'Simpan & Publikasikan ke GitHub';
+            cancelBtn.style.display = isEditing ? 'inline-block' : 'none';
             listCard.style.display = 'block';
 
             if (currentTab === 'seduhRasa' || currentTab === 'sambungCerita') {
@@ -321,7 +372,10 @@
                         <strong>${item.ikon ? item.ikon + ' ' : ''}${item.judul || item.nama}</strong><br>
                         <small style="color:var(--text-muted);">${item.tanggal || item.ukuran || item.link || ''}</small>
                     </div>
-                    <button class="btn btn-danger" onclick="deleteItem(${index})">Hapus</button>
+                    <div class="item-actions">
+                        <button class="btn btn-edit" onclick="editItem(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteItem(${index})">Hapus</button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -382,49 +436,63 @@
                     return;
                 }
 
-                const newItem = { id: Date.now() };
+                const isEditing = editingIndex !== null;
+                const itemData = {
+                    id: isEditing ? siteData[currentTab][editingIndex].id : Date.now()
+                };
+
                 if (currentTab === 'seduhRasa' || currentTab === 'sambungCerita') {
-                    newItem.judul = document.getElementById('f_judul').value;
-                    newItem.tanggal = document.getElementById('f_tanggal').value;
-                    newItem.kategori = document.getElementById('f_kategori').value;
-                    newItem.ringkasan = document.getElementById('f_ringkasan').value;
-                    newItem.isi = document.getElementById('f_isi').value;
-                    siteData[currentTab].unshift(newItem);
+                    itemData.judul = document.getElementById('f_judul').value;
+                    itemData.tanggal = document.getElementById('f_tanggal').value;
+                    itemData.kategori = document.getElementById('f_kategori').value;
+                    itemData.ringkasan = document.getElementById('f_ringkasan').value;
+                    itemData.isi = document.getElementById('f_isi').value;
                 } else if (currentTab === 'ukirKarya') {
-                    newItem.judul = document.getElementById('f_judul').value;
-                    newItem.tanggal = document.getElementById('f_tanggal').value;
-                    newItem.deskripsi = document.getElementById('f_deskripsi').value;
-                    newItem.tags = document.getElementById('f_tags').value.split(',').map(t => t.trim()).filter(Boolean);
-                    newItem.link = document.getElementById('f_link').value;
-                    siteData[currentTab].unshift(newItem);
+                    itemData.judul = document.getElementById('f_judul').value;
+                    itemData.tanggal = document.getElementById('f_tanggal').value;
+                    itemData.deskripsi = document.getElementById('f_deskripsi').value;
+                    itemData.tags = document.getElementById('f_tags').value.split(',').map(t => t.trim()).filter(Boolean);
+                    itemData.link = document.getElementById('f_link').value;
                 } else if (currentTab === 'pojokUnduh') {
-                    newItem.judul = document.getElementById('f_judul').value;
-                    newItem.ukuran = document.getElementById('f_ukuran').value;
-                    newItem.deskripsi = document.getElementById('f_deskripsi').value;
-                    newItem.link = document.getElementById('f_link').value;
-                    siteData[currentTab].unshift(newItem);
+                    itemData.judul = document.getElementById('f_judul').value;
+                    itemData.ukuran = document.getElementById('f_ukuran').value;
+                    itemData.deskripsi = document.getElementById('f_deskripsi').value;
+                    itemData.link = document.getElementById('f_link').value;
                 } else if (currentTab === 'kontak') {
-                    newItem.ikon = document.getElementById('f_ikon').value.trim();
-                    newItem.nama = document.getElementById('f_nama').value.trim();
-                    newItem.link = document.getElementById('f_link').value.trim();
-                    siteData[currentTab].push(newItem);
+                    itemData.ikon = document.getElementById('f_ikon').value.trim();
+                    itemData.nama = document.getElementById('f_nama').value.trim();
+                    itemData.link = document.getElementById('f_link').value.trim();
                 }
 
-                await pushToGitHub('Memperbarui konten via Admin Panel');
+                if (isEditing) {
+                    siteData[currentTab][editingIndex] = itemData;
+                    await pushToGitHub('Mengedit konten via Admin Panel');
+                    editingIndex = null;
+                } else {
+                    if (currentTab === 'kontak') {
+                        siteData[currentTab].push(itemData);
+                    } else {
+                        siteData[currentTab].unshift(itemData);
+                    }
+                    await pushToGitHub('Menambah konten via Admin Panel');
+                }
+
                 document.getElementById('contentForm').reset();
                 renderForm();
             } catch (err) {
                 showStatus(err.message, true);
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Simpan & Publikasikan ke GitHub';
+                btn.textContent = editingIndex !== null ? 'Simpan Perubahan ke GitHub' : 'Simpan & Publikasikan ke GitHub';
             }
         }
 
         async function deleteItem(index) {
             if (!confirm('Yakin ingin menghapus item ini?')) return;
+            if (editingIndex === index) editingIndex = null;
             siteData[currentTab].splice(index, 1);
             await pushToGitHub('Menghapus konten via Admin Panel');
+            renderForm();
         }
 
         async function pushToGitHub(commitMessage) {
@@ -432,7 +500,6 @@
             const repo = localStorage.getItem('gh_repo') || sessionStorage.getItem('gh_repo');
             const token = localStorage.getItem('gh_token') || sessionStorage.getItem('gh_token');
 
-            // Ambil SHA terbaru sebelum menyimpan agar tidak pernah terjadi bentrok versi (409)
             const latestRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json?t=${Date.now()}`, {
                 headers: getAuthHeaders(token),
                 cache: 'no-store'
