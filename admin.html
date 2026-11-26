@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Hifyp</title>
+    <style>
+        :root {
+            --bg-body: #f8fafc; --bg-card: #ffffff; --bg-header: #0f172a;
+            --text-main: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0;
+            --accent: #3b82f6; --accent-hover: #2563eb; --danger: #ef4444;
+        }
+        [data-theme="dark"] {
+            --bg-body: #090d16; --bg-card: #131b2e; --bg-header: #060910;
+            --text-main: #f1f5f9; --text-muted: #94a3b8; --border-color: #1e293b;
+            --accent: #60a5fa; --accent-hover: #3b82f6; --danger: #f87171;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+        header { background: var(--bg-header); color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 1.3rem; }
+        .container { max-width: 850px; margin: 30px auto; padding: 0 20px; }
+        .card { background: var(--bg-card); padding: 28px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 24px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 10px 12px; margin-bottom: 16px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); font-family: inherit; }
+        textarea { min-height: 120px; resize: vertical; }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .btn:hover { background: var(--accent-hover); }
+        .btn-danger { background: var(--danger); padding: 6px 12px; font-size: 0.8rem; }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; }
+        .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .tab-btn { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); cursor: pointer; font-weight: 500; }
+        .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-color); gap: 12px; }
+        .item-row:last-child { border-bottom: none; }
+        .status-msg { padding: 12px; border-radius: 6px; margin-bottom: 16px; display: none; font-weight: 500; }
+        .status-ok { background: #dcfce7; color: #166534; display: block; }
+        .status-err { background: #fee2e2; color: #991b1b; display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔐 Admin Panel - Hifyp</h1>
+        <div>
+            <a href="index.html" class="btn btn-outline" style="text-decoration:none; margin-right:8px;">Lihat Web</a>
+            <button id="logoutBtn" class="btn btn-outline" style="display:none;" onclick="logout()">Keluar</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="statusBox" class="status-msg"></div>
+
+        <!-- FORM LOGIN -->
+        <div id="loginSection" class="card">
+            <h2 style="margin-top:0;">Masuk Pengelola Konten</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Masukkan kredensial repository GitHub Anda untuk mengedit konten secara langsung.</p>
+            
+            <label>Username GitHub</label>
+            <input type="text" id="ghOwner" value="hifyp">
+
+            <label>Nama Repository</label>
+            <input type="text" id="ghRepo" value="hifyp.github.io">
+
+            <label>GitHub Personal Access Token (PAT)</label>
+            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+
+            <button class="btn" onclick="login()">Masuk Dashboard</button>
+        </div>
+
+        <!-- DASHBOARD ADMIN -->
+        <div id="dashboardSection" style="display:none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('seduhRasa', this)">Seduh Rasa</button>
+                <button class="tab-btn" onclick="switchTab('sambungCerita', this)">Sambung Cerita</button>
+                <button class="tab-btn" onclick="switchTab('ukirKarya', this)">Ukir Karya</button>
+                <button class="tab-btn" onclick="switchTab('pojokUnduh', this)">Pojok Unduh</button>
+            </div>
+
+            <!-- Form Tambah Konten -->
+            <div class="card">
+                <h3 id="formTitle" style="margin-top:0;">Tambah Konten Baru</h3>
+                <form id="contentForm" onsubmit="saveNewItem(event)">
+                    <div id="dynamicFields"></div>
+                    <button type="submit" class="btn" id="submitBtn">Simpan & Publikasikan ke GitHub</button>
+                </form>
+            </div>
+
+            <!-- Daftar Konten Tersimpan -->
+            <div class="card">
+                <h3 style="margin-top:0;">Daftar Konten Aktif</h3>
+                <div id="existingList">Memuat data...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+
+        let currentTab = 'seduhRasa';
+        let siteData = { seduhRasa: [], sambungCerita: [], ukirKarya: [], pojokUnduh: [] };
+        let fileSha = '';
+
+        // Cek sesi login tersimpan
+        window.onload = () => {
+            if (sessionStorage.getItem('gh_token')) {
+                document.getElementById('ghOwner').value = sessionStorage.getItem('gh_owner');
+                document.getElementById('ghRepo').value = sessionStorage.getItem('gh_repo');
+                document.getElementById('ghToken').value = sessionStorage.getItem('gh_token');
+                login(true);
+            }
+        };
+
+        function showStatus(msg, isError = false) {
+            const box = document.getElementById('statusBox');
+            box.textContent = msg;
+            box.className = 'status-msg ' + (isError ? 'status-err' : 'status-ok');
+            setTimeout(() => { box.style.display = 'none'; }, 5000);
+        }
+
+        async function login(isAuto = false) {
+            const owner = document.getElementById('ghOwner').value.trim();
+            const repo = document.getElementById('ghRepo').value.trim();
+            const token = document.getElementById('ghToken').value.trim();
+
+            if (!owner || !repo || !token) return showStatus('Semua kolom wajib diisi!', true);
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`, {
+                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+
+                if (!res.ok) throw new Error('Token salah atau file data.json belum dibuat di repository.');
+
+                const json = await res.json();
+                fileSha = json.sha;
+                // Decode UTF-8 Base64 dengan aman
+                const decoded = decodeURIComponent(escape(atob(json.content)));
+                siteData = JSON.parse(decoded);
+
+                sessionStorage.setItem('gh_owner', owner);
+                sessionStorage.setItem('gh_repo', repo);
+                sessionStorage.setItem('gh_token', token);
+
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                if (!isAuto) showStatus('Berhasil terhubung ke repository GitHub!');
+                
+                renderForm();
+                renderList();
+            } catch (err) {
+                showStatus(err.message, true);
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            location.reload();
+        }
+
+        function switchTab(tabName, btnEl) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+            renderForm();
+            renderList();
+        }
+
+        function renderForm() {
+            const container = document.getElementById('dynamicFields');
+            const today = new Date().toISOString().split('T')[0];
+
+            if (currentTab === 'seduhRasa' || currentTab === 'sambungCerita') {
+                container.innerHTML = `
+                    <label>Judul Tulisan</label>
+                    <input type="text" id="f_judul" required placeholder="Masukkan judul...">
+                    <label>Tanggal</label>
+                    <input type="date" id="f_tanggal" value="${today}" required>
+                    <label>Kategori / Label</label>
+                    <input type="text" id="f_kategori" required placeholder="Contoh: Refleksi, Kolaborasi">
+                    <label>Ringkasan Singkat (Tampil di daftar)</label>
+                    <input type="text" id="f_ringkasan" required placeholder="1-2 kalimat pembuka...">
+                    <label>Isi Tulisan Lengkap</label>
+                    <textarea id="f_isi" required placeholder="Tulis isi lengkap di sini..."></textarea>
+                `;
+            } else if (currentTab === 'ukirKarya') {
+                container.innerHTML = `
+                    <label>Nama Karya / Proyek</label>
+                    <input type="text" id="f_judul" required placeholder="Contoh: Sistem Informasi Layanan">
+                    <label>Tanggal / Tahun</label>
+                    <input type="date" id="f_tanggal" value="${today}" required>
+                    <label>Deskripsi Karya</label>
+                    <textarea id="f_deskripsi" required placeholder="Jelaskan fungsi dan dampak karya ini..."></textarea>
+                    <label>Tag Teknologi (Pisahkan dengan koma)</label>
+                    <input type="text" id="f_tags" placeholder="Contoh: HTML, JavaScript, UI/UX">
+                    <label>Tautan Karya / Demo</label>
+                    <input type="url" id="f_link" required placeholder="https://...">
+                `;
+            } else if (currentTab === 'pojokUnduh') {
+                container.innerHTML = `
+                    <label>Nama Berkas / Dokumen</label>
+                    <input type="text" id="f_judul" required placeholder="Contoh: Template SOP Digital">
+                    <label>Format / Ukuran Berkas</label>
+                    <input type="text" id="f_ukuran" required placeholder="Contoh: PDF (1.2 MB) atau DOCX">
+                    <label>Keterangan Berkas</label>
+                    <textarea id="f_deskripsi" required placeholder="Penjelasan singkat isi dokumen..."></textarea>
+                    <label>Tautan Unduhan (Google Drive / GitHub File)</label>
+                    <input type="url" id="f_link" required placeholder="https://...">
+                `;
+            }
+        }
+
+        function renderList() {
+            const listEl = document.getElementById('existingList');
+            const items = siteData[currentTab] || [];
+            if (items.length === 0) {
+                listEl.innerHTML = '<p style="color:var(--text-muted);">Belum ada item di kategori ini.</p>';
+                return;
+            }
+            listEl.innerHTML = items.map((item, index) => `
+                <div class="item-row">
+                    <div>
+                        <strong>${item.judul}</strong><br>
+                        <small style="color:var(--text-muted);">${item.tanggal || item.ukuran || ''}</small>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteItem(${index})">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        async function saveNewItem(e) {
+            e.preventDefault();
+            const newItem = { id: Date.now() };
+
+            if (currentTab === 'seduhRasa' || currentTab === 'sambungCerita') {
+                newItem.judul = document.getElementById('f_judul').value;
+                newItem.tanggal = document.getElementById('f_tanggal').value;
+                newItem.kategori = document.getElementById('f_kategori').value;
+                newItem.ringkasan = document.getElementById('f_ringkasan').value;
+                newItem.isi = document.getElementById('f_isi').value;
+            } else if (currentTab === 'ukirKarya') {
+                newItem.judul = document.getElementById('f_judul').value;
+                newItem.tanggal = document.getElementById('f_tanggal').value;
+                newItem.deskripsi = document.getElementById('f_deskripsi').value;
+                newItem.tags = document.getElementById('f_tags').value.split(',').map(t => t.trim()).filter(Boolean);
+                newItem.link = document.getElementById('f_link').value;
+            } else if (currentTab === 'pojokUnduh') {
+                newItem.judul = document.getElementById('f_judul').value;
+                newItem.ukuran = document.getElementById('f_ukuran').value;
+                newItem.deskripsi = document.getElementById('f_deskripsi').value;
+                newItem.link = document.getElementById('f_link').value;
+            }
+
+            siteData[currentTab].unshift(newItem); // Tambahkan di urutan paling atas
+            await pushToGitHub('Menambah konten baru via Admin Panel');
+            document.getElementById('contentForm').reset();
+            renderForm();
+        }
+
+        async function deleteItem(index) {
+            if (!confirm('Yakin ingin menghapus konten ini?')) return;
+            siteData[currentTab].splice(index, 1);
+            await pushToGitHub('Menghapus konten via Admin Panel');
+        }
+
+        async function pushToGitHub(commitMessage) {
+            const owner = sessionStorage.getItem('gh_owner');
+            const repo = sessionStorage.getItem('gh_repo');
+            const token = sessionStorage.getItem('gh_token');
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Menyimpan...';
+
+            try {
+                const jsonString = JSON.stringify(siteData, null, 2);
+                const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
+
+                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: encodedContent,
+                        sha: fileSha
+                    })
+                });
+
+                if (!res.ok) throw new Error('Gagal menyimpan perubahan ke GitHub.');
+
+                const result = await res.json();
+                fileSha = result.content.sha;
+                renderList();
+                showStatus('Berhasil disimpan! Perubahan akan tampil di web dalam ±1 menit.');
+            } catch (err) {
+                showStatus(err.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Simpan & Publikasikan ke GitHub';
+            }
+        }
+    </script>
+</body>
+</html>
