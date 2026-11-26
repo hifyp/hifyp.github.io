@@ -47,5 +47,12 @@
       "link": "#"
     }
   ],
-  "kontak": []
+  "kontak": [
+    {
+      "id": 1795668307136,
+      "ikon": "💬",
+      "nama": "WhatsApp",
+      "link": "https://wa.me/68896565758"
+    }
+  ]
 }
