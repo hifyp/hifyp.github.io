@@ -1,0 +1,41 @@
+{
+  "seduhRasa": [
+    {
+      "id": 1732580001,
+      "judul": "Menemukan Hening di Tengah Bisingnya Pekerjaan",
+      "tanggal": "2026-11-26",
+      "kategori": "Refleksi",
+      "ringkasan": "Catatan singkat tentang pentingnya mengambil jeda sejenak sebelum kembali menyusun baris kode dan kebijakan.",
+      "isi": "Sering kali kita terjebak pada rutinitas yang menuntut serba cepat. Padahal, kejernihan berpikir justru lahir saat kita berani berhenti sejenak, menyeduh kopi, dan melihat gambaran besar dari apa yang sedang kita kerjakan."
+    }
+  ],
+  "sambungCerita": [
+    {
+      "id": 1732580002,
+      "judul": "Catatan Kolaborasi Transformasi Layanan Digital",
+      "tanggal": "2026-11-20",
+      "kategori": "Kolaborasi",
+      "ringkasan": "Pengalaman menyelaraskan kebutuhan pengguna dengan alur kerja sistem informasi yang sederhana namun berdampak.",
+      "isi": "Membangun sistem yang baik bukan soal seberapa rumit teknologinya, melainkan seberapa mudah rekan kerja di lapangan memanfaatkannya untuk memangkas birokrasi yang berbelit."
+    }
+  ],
+  "ukirKarya": [
+    {
+      "id": 1732580003,
+      "judul": "Weblog Pribadi & Mini CMS GitHub",
+      "tanggal": "2026-11-26",
+      "tags": ["HTML/CSS", "JavaScript", "GitHub API"],
+      "deskripsi": "Sistem manajemen konten statis tanpa server berbayar yang memanfaatkan GitHub Pages dan GitHub REST API.",
+      "link": "https://hifyp.github.io"
+    }
+  ],
+  "pojokUnduh": [
+    {
+      "id": 1732580004,
+      "judul": "Template Perencanaan Alur Kerja Digital (SOP)",
+      "ukuran": "PDF / DOCX",
+      "deskripsi": "Kerangka dasar penyusunan standar operasional prosedur untuk digitalisasi layanan administrasi.",
+      "link": "#"
+    }
+  ]
+}
