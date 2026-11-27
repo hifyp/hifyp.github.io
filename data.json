@@ -72,5 +72,11 @@
       "nama": "Email",
       "link": "mailto:halo@hifyp.com"
     }
-  ]
+  ],
+  "filosofi": {
+    "fotoVersion": 1795745687004,
+    "fotoRatio": "1:1",
+    "judul": "Kenapa namanya \"hifyp\" ?",
+    "teks": "<b>Hifyp</b> lahir dari sapaan hangat <i>\"Hi, FYP\"</i> yang memaknai setiap ruang digital sebagai titik temu gagasan, karya, dan kebermanfaatan nyata. Identitas ini merepresentasikan semangat &nbsp;nyata&nbsp;sederhana dalam tampilan, namun terstruktur dan bermakna dalam setiap detailnya. Sedangnkan FYP sendiri sebenarnya singkatan nama saya, Febri Yanto Pracdirana. Norak yak ? Akh bodo amat dagh."
+  }
 }
