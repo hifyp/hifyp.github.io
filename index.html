@@ -102,7 +102,7 @@
             text-align: center;
         }
 
-        /* Kontainer Utama Lebih Lebar untuk Desktop */
+        /* Kontainer Utama */
         .container {
             max-width: 1160px;
             margin: 32px auto;
@@ -130,7 +130,7 @@
             text-align: justify;
         }
 
-        /* Tata Letak Foto & Teks Tentang Saya */
+        /* Tata Letak Foto & Teks Tentang Saya & Filosofi */
         .about-wrapper {
             display: flex;
             align-items: center;
@@ -155,10 +155,18 @@
             height: 213px;
         }
 
+        .about-photo-box.logo-box {
+            padding: 10px;
+        }
+
         .about-photo-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .about-photo-box.logo-box img {
+            object-fit: contain;
         }
 
         .about-content {
@@ -279,7 +287,7 @@
             color: var(--accent);
         }
 
-/* Footer Bar Tetap di Bawah (Kiri & Kanan) */
+        /* Footer Bar Tetap di Bawah (Kiri & Kanan) */
         .footer-bar {
             position: fixed;
             bottom: 0;
@@ -388,6 +396,7 @@
     </header>
 
     <div class="container">
+        <!-- BAGIAN 1: TENTANG SAYA -->
         <div class="section">
             <div class="about-wrapper">
                 <div class="about-photo-box" id="photoBox">
@@ -401,6 +410,7 @@
             </div>
         </div>
 
+        <!-- BAGIAN 2: RUANG EKSPLORASI -->
         <div class="section" id="eksplorasi">
             <h2>Ruang Eksplorasi</h2>
             <div class="grid">
@@ -454,8 +464,23 @@
             </div>
         </div>
 
+        <!-- BAGIAN 3: FILOSOFI NAMA & LOGO HIFYP -->
+        <div class="section" id="filosofi">
+            <div class="about-wrapper">
+                <div class="about-photo-box logo-box" id="filosofiPhotoBox">
+                    <img id="filosofiImg" src="logo-filosofi.png" alt="Logo Hifyp" onerror="this.style.display='none'; document.getElementById('filosofiPlaceholder').style.display='block';">
+                    <span id="filosofiPlaceholder" style="display:none; font-size:2.5rem;">✨</span>
+                </div>
+                <div class="about-content">
+                    <h2 id="filosofiTitle">Filosofi Nama &amp; Logo Hifyp</h2>
+                    <div id="filosofiText" class="about-rich-text"><b>Hifyp</b> lahir dari sapaan hangat <i>"Hi, FYP"</i> yang memaknai setiap ruang digital sebagai titik temu gagasan, karya, dan kebermanfaatan nyata. Identitas ini merepresentasikan semangat <u>bergerak dalam senyap, berdampak dalam nyata</u>—sederhana dalam tampilan, namun terstruktur dan bermakna dalam setiap detailnya.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAGIAN 4: KONTAK & SOSIAL MEDIA -->
         <div class="section" id="kontak">
-            <h2>Kontak & Sosial Media</h2>
+            <h2>Kontak &amp; Sosial Media</h2>
             <p>Tertarik berdiskusi atau berkolaborasi? Hubungi saya melalui platform berikut:</p>
             <div class="contact-links" id="contactLinks">
                 <a href="mailto:emailkamu@contoh.com" class="contact-item">✉️ Email</a>
@@ -521,6 +546,27 @@
                         document.getElementById('footerText').textContent = data.profil.footer;
                     }
                 }
+
+                // Memuat Data Filosofi Nama & Logo Hifyp
+                if (data.filosofi) {
+                    if (data.filosofi.judul) {
+                        document.getElementById('filosofiTitle').textContent = data.filosofi.judul;
+                    }
+                    if (data.filosofi.teks) {
+                        const formattedFilosofi = data.filosofi.teks.includes('<')
+                            ? data.filosofi.teks
+                            : data.filosofi.teks.replace(/\n/g, '<br>');
+                        document.getElementById('filosofiText').innerHTML = formattedFilosofi;
+                    }
+                    if (data.filosofi.fotoRatio === '3:4') {
+                        document.getElementById('filosofiPhotoBox').classList.add('ratio-3-4');
+                    }
+                    if (data.filosofi.fotoVersion) {
+                        const fImg = document.getElementById('filosofiImg');
+                        fImg.src = 'logo-filosofi.png?v=' + data.filosofi.fotoVersion;
+                    }
+                }
+
                 if (data.kontak && data.kontak.length > 0) {
                     const container = document.getElementById('contactLinks');
                     container.innerHTML = data.kontak.map(item => {
