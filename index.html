@@ -279,7 +279,7 @@
             color: var(--accent);
         }
 
-        /* Footer Bar Tetap di Bawah (Pojok Kiri Bawah) */
+/* Footer Bar Tetap di Bawah (Kiri & Kanan) */
         .footer-bar {
             position: fixed;
             bottom: 0;
@@ -292,9 +292,12 @@
             border-top: 1px solid var(--border-color);
             color: var(--text-header-sub);
             padding: 12px 48px;
-            text-align: left;
             font-size: 0.85rem;
             box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
         }
 
         /* Responsif Tablet (769px - 1024px) */
@@ -357,6 +360,19 @@
             .footer-bar {
                 padding: 11px 16px;
                 font-size: 0.8rem;
+            }
+        }
+
+        /* Responsif Layar HP Sangat Kecil (<= 480px) agar 2 teks tidak bertabrakan */
+        @media (max-width: 480px) {
+            body {
+                padding-bottom: 68px;
+            }
+            .footer-bar {
+                flex-direction: column;
+                text-align: center;
+                gap: 2px;
+                font-size: 0.76rem;
             }
         }
     </style>
@@ -450,7 +466,10 @@
     </div>
 
     <footer class="footer-bar">
+    <div class="footer-inner">
         <div id="footerText">&copy; 2026. hifyp by GitHub.</div>
+        <div>Engineered by FYP Project</div>
+    </div>
     </footer>
 
     <script>
